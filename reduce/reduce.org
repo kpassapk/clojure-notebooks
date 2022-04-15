@@ -1,0 +1,52 @@
+#+TITLE: Reduce
+
+The =reduced= function stops a reduction function and immediately returns the
+value. (A sort of 'break' for reduction.)
+
+#+begin_src clojure :results none
+(defn sum-clip [c n]
+  (reduce (fn [a v] (if (< a c) (+ a v) (reduced c))) (range n)))
+#+end_src
+
+This function for values 0 to 20
+
+#+name: plot-fn
+#+begin_src clojure :var fn="sum-clip" :exports none
+(let [n 20
+      c 50
+      x (range 1 n)
+      f (partial sum-clip c)
+      d #(vector % (f %))]
+  (map d x))
+#+end_src
+
+#+begin_src gnuplot :var data=data :file output.png
+plot data using 1:2 with lines
+#+end_src
+
+Plot another function
+
+#+begin_src clojure :results none
+(defn sqrt [x] (Math/sqrt x))
+#+end_src
+
+#+name: gen-data
+#+begin_src clojure
+(let [n 20
+      x (range 1 n)
+      d #(vector % ((resolve (symbol func)) %))]
+  (map d x))
+#+end_src
+
+#+name: sqrt
+#+call: gen-data(func="sqrt")
+
+#+begin_src gnuplot :var data=sqrt :file sqrt.png
+set title "Sine"
+set xlabel "x"
+set ylabel "sin(x)"
+plot data using 1:2 with lines
+#+end_src
+
+#+RESULTS:
+[[file:sqrt.png]]
