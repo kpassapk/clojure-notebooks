@@ -4,10 +4,9 @@
   (fn [m n]
     (loop [r [] i m]
       (if (< i n)
-        (let [j (inc i)]
-          (recur
-           (conj r i)
-           j))
+        (recur
+         (conj r i)
+         (inc i))
         r))))
 
 (def with-take
