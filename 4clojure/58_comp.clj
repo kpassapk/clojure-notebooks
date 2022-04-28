@@ -1,29 +1,18 @@
 (ns mycomp)
 
-(def comp2
-  (fn [f m]
-    (fn [arg]
-      (f (m arg)))))
-
-(defn compn [& fs]
-  (fn [arg]
-    (let [f (first fs)
-          more (rest fs)]
-      (if f
-        (f ((apply compn more) arg))
-        arg))))
-
-; taken from solutions
-(defn myc [& xs]
+(defn compn [& xs]
   (fn [& ys]
-    (if (seq? xs)
-      ((apply myc (drop-last xs)) (apply (last xs) ys))
-      (first ys))))
+    (let [f (last xs)
+          more (drop-last xs)]
+      (if (seq? xs)
+        ((apply compn more) (apply f ys))
+        (first ys)))))
+
+((comp /) 1 2)
 
 ((fn foo [x]
    (when (> x 0)
      (conj (foo (dec x)) x))) 5)
-
 
 (ns mycomp-test
   (:require [clojure.test :as t]
@@ -31,8 +20,18 @@
 
 ;(= [3 2 1] ((__ rest reverse) [1 2 3 4]))
 
+(= true ((comp zero? #(mod % 8) +) 3 5 7 9))
+
 (t/testing "Comp"
-  (t/deftest mine
+  (t/deftest one
     (let [in [rest reverse]
-          exp [1 2 3 4]]
-      (t/is (= exp ((apply m/compn in) [1 2 3 4]))))))
+          exp [3 2 1]]
+      (t/is (= exp ((apply comp in) [1 2 3 4])))))
+  (t/deftest two
+    (let [in [(partial + 3) second]
+          exp 5]
+      (t/is (= exp ((apply comp in) [1 2 3 4])))))
+  (t/deftest three
+    (let [in [zero? #(mod % 8) +]
+          exp true]
+      (t/is (= exp ((apply comp in) 3 5 7 9))))))

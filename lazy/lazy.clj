@@ -7,6 +7,8 @@
 ;; Repeat stuff
 (take 7 (cycle [1 2 3]))
 
+(take 10 (range))
+
 (take 7 (flatten (repeat (range 1 4))))
 
 (def numbers (iterate inc 1))
