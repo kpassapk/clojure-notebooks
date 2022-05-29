@@ -7,9 +7,31 @@
 ;; at least two words. Words without any anagrams should not be included in the
 ;; result.
 
-;; (= (__ ["meat" "mat" "team" "mate" "eat"])
+(def stupid
+  (fn [words]
+    (let [freqs (map frequencies words)
+          m (interleave freqs words)]
+      (->> m
+           (partition 2)
+           (group-by first)
+           vals
+           (filter #(> (count %) 1))
+           (map (fn [x] (into #{} (map #(second %) x))))
+           (into #{})))))
+
+
+(def better
+  (fn [words]
+    (->> words
+         (group-by frequencies)
+         vals
+         (filter #(> (count %) 1))
+         (map set)
+         set)))
+
+(better ["meat" "mat" "team" "mate" "eat"])
 ;;   #{#{"meat" "team" "mate"}})
 
 
-;; (= (__ ["veer" "lake" "item" "kale" "mite" "ever"])
+(better ["veer" "lake" "item" "kale" "mite" "ever"])
 ;;    #{#{"veer" "ever"} #{"lake" "kale"} #{"mite" "item"}})
